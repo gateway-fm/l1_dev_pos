@@ -1,0 +1,16 @@
+#!/bin/sh
+
+source ./.env
+
+docker run \
+    -v ./src/config.yaml:/local/config.yaml \
+    -v ./src/genesis.json:/local/genesis.json \
+    -v $DATA_DIR/:/data \
+    -it gcr.io/prysmaticlabs/prysm/cmd/prysmctl:HEAD-52af63 \
+        testnet generate-genesis \
+        --fork=capella \
+        --num-validators=$NUM_NODES \
+        --chain-config-file=/local/config.yaml \
+        --geth-genesis-json-in=/local/genesis.json \
+        --output-ssz=/data/genesis.ssz \
+        --geth-genesis-json-out=/data/genesis.json

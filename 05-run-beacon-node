@@ -1,0 +1,35 @@
+#!/bin/sh
+
+source ./.env
+
+docker run -it --rm \
+    -p 4000:4000 -p 4100:4100 -p 4200:4200 -p 4300:4300/udp -p 4400:4400 \
+    -v $DATA_DIR:/data \
+    -v ./src/config.yaml:/local/config.yaml \
+    -v ./src/jwtsecret:/secrets/jwtsecret \
+    --name beacon-node \
+    --net=host \
+    gcr.io/prysmaticlabs/prysm/beacon-chain:stable \
+        --datadir=/data/beacondata \
+        --min-sync-peers=$MIN_SYNC_PEERS \
+        --genesis-state=/data/genesis.ssz \
+        --bootstrap-node=$PRYSM_BOOTSTRAP_NODE \
+        --interop-eth1data-votes \
+        --chain-config-file=/local/config.yaml \
+        --contract-deployment-block=0 \
+        --chain-id=${CHAIN_ID} \
+        --rpc-host=127.0.0.1 \
+        --rpc-port=4000 \
+        --grpc-gateway-host=127.0.0.1 \
+        --grpc-gateway-port=4100 \
+        --execution-endpoint=http://127.0.0.1:8200 \
+        --accept-terms-of-use \
+        --jwt-secret=/secrets/jwtsecret \
+        --suggested-fee-recipient=${FEE_RECEIVER} \
+        --minimum-peers-per-subnet=0 \
+        --p2p-tcp-port=4200 \
+        --p2p-udp-port=4300 \
+        --monitoring-port=4400 \
+        --verbosity=info \
+        --slasher \
+        --enable-debug-rpc-endpoints

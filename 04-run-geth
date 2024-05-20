@@ -1,0 +1,36 @@
+#!/bin/sh
+
+source ./.env
+
+docker run \
+    --net=host \
+    -p 8000:8000 -p 8300:8300 -p 13000:13000 -p 12000:12000/udp \
+    -v $DATA_DIR:/data \
+    -v ./src/jwtsecret:/secrets/jwtsecret \
+    -v ./src/geth_password:/secrets/geth_password \
+    -it --rm ethereum/client-go:v1.14.3 \
+      --networkid=${CHAIN_ID:-116553611} \
+      --http \
+      --http.api=eth,net,web3 \
+      --http.addr=127.0.0.1 \
+      --http.corsdomain="*" \
+      --http.port=8000 \
+      --port=8400 \
+      --metrics.port=8300 \
+      --ws \
+      --ws.api=eth,net,web3 \
+      --ws.addr=127.0.0.1 \
+      --ws.origins="*" \
+      --ws.port=8100 \
+      --authrpc.vhosts="*" \
+      --authrpc.addr=127.0.0.1 \
+      --authrpc.jwtsecret=/secrets/jwtsecret \
+      --authrpc.port=8200 \
+      --datadir=/data/execution \
+      --password=/secrets/geth_password \
+      --allow-insecure-unlock \
+      --unlock=${FEE_RECEIVER} \
+      --identity=node-0 \
+      --maxpendpeers=$NUM_NODES \
+      --verbosity=3 \
+      --syncmode=full

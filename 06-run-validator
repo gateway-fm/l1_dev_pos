@@ -1,0 +1,20 @@
+#!/bin/sh
+
+source ./.env
+
+docker run -it --rm \
+    -v ./src/config.yaml:/local/config.yaml \
+    -v $DATA_DIR:/data \
+    --name validator \
+    --net=host \
+    gcr.io/prysmaticlabs/prysm/validator:stable \
+        --beacon-rpc-provider=127.0.0.1:4000 \
+        --datadir=/data/validatordata \
+        --accept-terms-of-use \
+        --interop-num-validators=1 \
+        --interop-start-index=0 \
+        --rpc-port=7000 \
+        --grpc-gateway-port=7100 \
+        --monitoring-port=7200 \
+        --graffiti="node-0" \
+        --chain-config-file=/local/config.yaml

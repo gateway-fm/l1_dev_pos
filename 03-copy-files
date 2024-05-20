@@ -1,0 +1,7 @@
+#!/bin/sh
+
+source ./.env
+
+sudo chown alp:alp $DATA_DIR -R
+
+cp ./src/UTC--2024-05-17T17-08-54.834254101Z--6ca9171f321ddd50bc3cb831fc59626a0e0e1432 $DATA_DIR/execution/keystore/
